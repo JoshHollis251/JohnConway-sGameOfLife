@@ -33,7 +33,10 @@ class Node:
       return self.row, self.col
    
    def is_filled(self):
-      return self.color == TURQUOISE
+      if self.color == TURQUOISE:
+         return 1
+      else:
+         return 0 
    
    def reset(self):
       self.color = BLACK
@@ -43,10 +46,7 @@ class Node:
       
    def draw(self, WIN):
       pygame.draw.rect(WIN, self.color, (self.x, self.y, self.width, self.height))
-   
-   def updateNeighbors(self, grid):
-      pass
-   
+              
    def __lt__(self, other):
       return False
 
@@ -90,6 +90,20 @@ def getClickedPos(xpos, ypos, rows, cols):
    
    return row, col
 
+def updateNeighbors(grid, rows, cols):
+   GCopy = grid.copy()
+   
+   for x in range(cols):
+      for y in range(rows):
+         #todo add update logic
+         neighborCount = int(grid[x, (y-1)%rows] + grid[x, (y+1)%rows] +
+                              grid[(x-1)%cols, y] + grid[(x+1)%cols, y] +
+                              grid[(x-1)%cols, (y-1)%rows] + grid[(x-1)%cols, (y+1)%rows] +
+                              grid[(x+1)%cols, (y-1)%rows] + grid[(x+1)%cols, (y+1)%rows] )
+         node = grid[x,y]
+         if node.is_filled():
+            pass
+
 def main(WIN):
    ROWS = 50
    COLS = 50
@@ -97,10 +111,14 @@ def main(WIN):
    grid = makeGrid(ROWS, COLS)
 
    while True:
-      for event in pygame.event.get():
-         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-               pause = False
+      while pause == True:
+         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_SPACE:
+                  pause = False
+
+         updateNeighbors(grid, ROWS, COLS)
+         
       
       while pause == False:
          draw(WIN, grid, ROWS, COLS)
