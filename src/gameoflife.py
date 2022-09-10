@@ -3,6 +3,7 @@ from turtle import width
 import pygame
 import math
 from queue import PriorityQueue
+import copy
 
 WINWIDTH = 800
 WINHEIGHT = 800
@@ -15,6 +16,7 @@ PURPLE = (144, 110, 255)
 WINDOW = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
 pygame.display.set_caption("John Conway's Game of Life")
 pygame.init()
+clock = pygame.time.Clock()
 
 class Node:
    def __init__(self, row, col, width, height, totalRows, totalCols):
@@ -91,33 +93,45 @@ def getClickedPos(xpos, ypos, rows, cols):
    return row, col
 
 def updateNeighbors(grid, rows, cols):
-   GCopy = grid.copy()
-   
+   GCopy = copy.deepcopy(grid)
+   neighborCount = 0
    for x in range(cols):
       for y in range(rows):
          #todo add update logic
-         neighborCount = int(grid[x, (y-1)%rows] + grid[x, (y+1)%rows] +
-                              grid[(x-1)%cols, y] + grid[(x+1)%cols, y] +
-                              grid[(x-1)%cols, (y-1)%rows] + grid[(x-1)%cols, (y+1)%rows] +
-                              grid[(x+1)%cols, (y-1)%rows] + grid[(x+1)%cols, (y+1)%rows] )
-         node = grid[x,y]
-         if node.is_filled():
-            pass
+         
+         neighborCount = int(grid[x][ (y-1)%rows].is_filled() + grid[x][ (y+1)%rows].is_filled() +
+                             grid[(x-1)%cols][ y].is_filled() + grid[(x+1)%cols][ y].is_filled() +
+                             grid[(x-1)%cols][ (y-1)%rows].is_filled() + grid[(x-1)%cols][ (y+1)%rows].is_filled() +
+                             grid[(x+1)%cols][ (y-1)%rows].is_filled() + grid[(x+1)%cols][ (y+1)%rows].is_filled() )
+         node = grid[x][y]
+         if node.is_filled() == 1:
+            if neighborCount == 2 or neighborCount == 3:
+               GCopy[x][y].fillSquare()
+            else: 
+               GCopy[x][y].reset()
+         else:
+            if neighborCount == 3:
+               GCopy[x][y].fillSquare()
+            else:
+               GCopy[x][y].reset()
+               grid[0]  
+   return GCopy
 
 def main(WIN):
-   ROWS = 50
-   COLS = 50
+   ROWS = 25
+   COLS = 25
    pause = False
    grid = makeGrid(ROWS, COLS)
-
    while True:
       while pause == True:
+         grid = updateNeighbors(grid, ROWS, COLS)
+         draw(WIN, grid, ROWS, COLS)
          for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                if event.key == pygame.K_SPACE:
                   pause = False
 
-         updateNeighbors(grid, ROWS, COLS)
+         
          
       
       while pause == False:
