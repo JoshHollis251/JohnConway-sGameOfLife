@@ -97,7 +97,6 @@ def updateNeighbors(grid, rows, cols):
    neighborCount = 0
    for x in range(cols):
       for y in range(rows):
-         #todo add update logic
          
          neighborCount = int(grid[x][ (y-1)%rows].is_filled() + grid[x][ (y+1)%rows].is_filled() +
                              grid[(x-1)%cols][ y].is_filled() + grid[(x+1)%cols][ y].is_filled() +
@@ -123,7 +122,7 @@ def main(WIN):
    pause = False
    grid = makeGrid(ROWS, COLS)
    while True:
-      while pause == True:
+      while pause == True: #paused logic
          grid = updateNeighbors(grid, ROWS, COLS)
          draw(WIN, grid, ROWS, COLS)
          for event in pygame.event.get():
@@ -131,10 +130,7 @@ def main(WIN):
                if event.key == pygame.K_SPACE:
                   pause = False
 
-         
-         
-      
-      while pause == False:
+      while pause == False: #paused logic
          draw(WIN, grid, ROWS, COLS)
          for event in pygame.event.get():
 
